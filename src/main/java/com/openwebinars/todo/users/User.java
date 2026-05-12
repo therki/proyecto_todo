@@ -1,9 +1,6 @@
 package com.openwebinars.todo.users;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,21 +19,44 @@ import java.util.List;
 @Entity
 @Table(name = "user_entity")// USER es palabra reservada en H2 y otros SGBD
 public class User implements UserDetails {
+    // Tipos de role para el usuario
+    public enum RoleType { ADMIN, GESTOR, USER }
 
     @Id
     @GeneratedValue
     private Long id;
 
+    @Column(unique = true)
     private String username;
+
     private String email;
     private String password;
 
-    @Builder.Default
-    private boolean isAdmin = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name="role")
+    private RoleType role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = "ROLE_" + ((isAdmin) ? "ADMIN" : "USER");
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
