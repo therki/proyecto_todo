@@ -32,7 +32,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByCompletedAndAuthor(boolean completed, User author);
 
     /* Buscar por fecha de creacion */
-    List<Task> findByCreatedAtAndAuthor(LocalDateTime createdAt, User author);
+    List<Task> findByCreatedAtAndAuthor(LocalDate createdAt, User author);
 
     /* Buscar por fecha limite */
     List<Task> findByDeadlineLessThanEqualAndAuthor(LocalDate deadline, User author);

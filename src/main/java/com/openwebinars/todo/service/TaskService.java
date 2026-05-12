@@ -110,7 +110,7 @@ public class TaskService {
     }
 
     /* Obtener tareas por fecha de creacion */
-    public List<Task> searchByCreatedAt(LocalDateTime fecha, User autor){
+    public List<Task> searchByCreatedAt(LocalDate fecha, User autor){
         List<Task> result = taskRepository.findByCreatedAtAndAuthor(fecha, autor);
         if(result.isEmpty()){
             throw new TaskNotFoundException();
