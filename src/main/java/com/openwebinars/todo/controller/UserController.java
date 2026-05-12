@@ -12,6 +12,10 @@ import com.openwebinars.todo.users.NewUserResponse;
 import com.openwebinars.todo.users.User;
 import com.openwebinars.todo.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,22 +40,19 @@ public class UserController {
     private final TagService tagService;
     private CategoryService categoryService;
 
-//    @PostMapping("/auth/register")
-//    public ResponseEntity<NewUserResponse> createUser(@RequestBody NewUserCommand cmd) {
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .body(NewUserResponse.of(userService.register(cmd)));
-//    }
     /*** CRUD TAREA ****/
     /* Listar tareas*/
     @Operation(summary = "Listar mis tareas", description = "Recupera todas las tareas del usuario autenticado")
     @GetMapping("/tasks")
-    public List<Task> getMyTasks(@AuthenticationPrincipal User user) {
+    public List<Task> getMyTasks(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
         return taskService.findByAuthor(user);
     }
     /* Obtener tarea */
     @Operation(summary = "Obtener tarea por ID", description = "Obtiene los detalles de una tarea específica")
     @GetMapping("/task/{id}")
-    public Task getById(@PathVariable Long id) {
+    public Task getById(
+            @Parameter(description = "ID de la tarea", required = true)
+            @PathVariable Long id) {
         return taskService.findById(id);
     }
 
@@ -59,7 +60,20 @@ public class UserController {
     @Operation(summary = "Crear tarea", description = "Crea una nueva tarea asignándola al usuario actual")
     @PostMapping("/task")
     public ResponseEntity<Task> createTask(
+            @Parameter(description = "Datos de la tarea a crear", required = true)
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Datos de la nueva tarea",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EditTaskDto.class),
+                            examples = @ExampleObject(
+                                    value = "{ \"title\": \"Nueva tarea\", \"description\": \"Descripción de la tarea\", \"completed\": false, \"deadline\": \"2025-12-31T23:59\", \"priority\": \"MEDIA\", \"categoryId\": 1, \"tagsId\": [1,2] }"
+                            )
+                    )
+            )
             @RequestBody EditTaskDto dto,
+            @Parameter(hidden = true)
             @AuthenticationPrincipal User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.save(dto, user));
     }
@@ -67,7 +81,11 @@ public class UserController {
     /* Editar tarea */
     @Operation(summary = "Editar tarea", description = "Modifica los datos de una tarea existente")
     @PutMapping("/task/{id}")
-    public Task updateTask(@PathVariable Long id, @RequestBody EditTaskDto dto) {
+    public Task updateTask(
+            @Parameter(description = "ID de la tarea a editar", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Datos actualizados de la tarea", required = true)
+            @RequestBody EditTaskDto dto) {
         return taskService.edit(dto, id);
     }
 
@@ -75,71 +93,109 @@ public class UserController {
     @Operation(summary = "Eliminar tarea", description = "Borra permanentemente una tarea")
     @DeleteMapping("/task/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTask(@PathVariable Long id) {
+    public void deleteTask(
+            @Parameter(description = "ID de la tarea a eliminar", required = true)
+            @PathVariable Long id) {
         taskService.delete(id);
     }
     /** Obtener tareas filtradas */
     /* Obtener tarea por descripcion*/
     @Operation(summary = "Obtener tarea por descripción", description = "Obtiene el listado de tareas dada una descripción")
     @GetMapping("/task/search-by-description")
-    public List<Task> getByDescription(@RequestParam String description, @AuthenticationPrincipal User user) {
+    public List<Task> getByDescription(
+            @Parameter(description = "Descripción de la tarea", required = true)
+            @RequestParam String description,
+            @Parameter( hidden = true) @AuthenticationPrincipal User user) {
         return taskService.searchByDescription(description, user);
     }
     /* Obtener tarea por prioridad*/
     @Operation(summary = "Obtener tarea por prioridad", description = "Obtiene el listado de tareas con una prioridad específica")
     @GetMapping("/task/search-by-priority")
-    public List<Task> getByPriority(@RequestParam Task.Priority priority, @AuthenticationPrincipal User user) {
+    public List<Task> getByPriority(
+            @Parameter(description = "Prioridad de la tarea", required = true)
+            @RequestParam Task.Priority priority,
+            @Parameter(hidden = true) @AuthenticationPrincipal User user) {
         return taskService.searchByPriority(priority, user);
     }
     /* Obtener tarea por estado completado*/
     @Operation(summary = "Obtener tarea por estado", description = "Obtiene el listado de tareas con estado completado / no completado")
     @GetMapping("/task/search-completed")
-    public List<Task> getByStatus(@RequestParam Boolean completed, @AuthenticationPrincipal User user) {
+    public List<Task> getByStatus(
+            @Parameter(description = "Estado de la tarea (true/false)", required = true)
+            @RequestParam Boolean completed,
+            @Parameter(hidden = true) @AuthenticationPrincipal User user) {
         return taskService.searchByCompleted(completed, user);
     }
     /* Obtener tarea por estado completado*/
-    @Operation(summary = "Obtener tarea por fecha límite", description = "Obtiene el listado de tareas filtradas por fecha límite")
+    @Operation(summary = "Obtener tarea por fecha límite (formato YYYY-MM-DD)", description = "Obtiene el listado de tareas filtradas por fecha límite")
     @GetMapping("/task/search-by-deadline")
-    public List<Task> getByDeadline(@RequestParam String deadline, @AuthenticationPrincipal User user) {
+    public List<Task> getByDeadline(
+            @Parameter(description = "Fecha límite de la tarea", required = true)
+            @RequestParam String deadline,
+            @Parameter(hidden = true) @AuthenticationPrincipal User user) {
         return taskService.searchByDeadline(LocalDate.parse(deadline), user);
     }
     @Operation(summary = "Obtener tarea por estado", description = "Obtiene el listado de tareas con estado completado / no completado")
     @GetMapping("/task/search-by-title")
-    public List<Task> getByTitle(@RequestParam String title, @AuthenticationPrincipal User user) {
+    public List<Task> getByTitle(
+            @Parameter(description = "Título de la tarea", required = true)
+            @RequestParam String title,
+            @Parameter(hidden = true) @AuthenticationPrincipal User user) {
         return taskService.searchByTitle(title, user);
     }
     /*** CRUD TAG */
     /* Listar etiquetas */
     @Operation(summary = "Listar etiquetas", description = "Listar etiquetas del usuario")
     @GetMapping("/tags")
-    public List<com.openwebinars.todo.model.Tag> listTags(@AuthenticationPrincipal User user) {
+    public List<com.openwebinars.todo.model.Tag> listTags(
+            @Parameter(hidden = true) @AuthenticationPrincipal User user) {
         return tagService.findAll();
     }
 
     /* Obtener etiqueta */
     @Operation(summary = "Listar etiquetas", description = "Listar etiquetas del usuario")
     @GetMapping("/tag/{name}")
-    public com.openwebinars.todo.model.Tag getTag(String name) {
+    public com.openwebinars.todo.model.Tag getTag(
+            @Parameter(description = "Nombre de la etiqueta", required = true)
+            @PathVariable String name) {
         return tagService.findByName(name);
     }
 
     /* Crear etiqueta */
     @Operation(summary = "Crear etiqueta", description = "Crear nueva etiqueta")
     @PostMapping("/tag")
-    public ResponseEntity<com.openwebinars.todo.model.Tag> createTag(@RequestBody com.openwebinars.todo.model.Tag tag) {
+    public ResponseEntity<com.openwebinars.todo.model.Tag> createTag(
+            @Parameter(description = "Datos de la neva etiqueta", required = true)
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Datos de la etiqueta",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{ \"name\": \"urgente\" }"
+                            )
+                    )
+            )
+            @RequestBody com.openwebinars.todo.model.Tag tag) {
         return ResponseEntity.status(HttpStatus.CREATED).body(tagService.save(tag));
     }
     /* Editar etiqueta */
     @Operation(summary = "Editar etiqueta", description = "Editar etiqueta existente")
     @PutMapping("/tag/{id}")
-    public com.openwebinars.todo.model.Tag editTag(@PathVariable Long id, @RequestBody com.openwebinars.todo.model.Tag tag) {
+    public com.openwebinars.todo.model.Tag editTag(
+            @Parameter(description = "ID de la etiqueta", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Datos actualizados de la etiqueta", required = true)
+            @RequestBody com.openwebinars.todo.model.Tag tag) {
         return tagService.edit(id, tag);
     }
     /* Eliminar etiqueta */
     @Operation(summary = "Eliminar etiqueta", description = "Borra una etiqueta ")
     @DeleteMapping("/tag/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTag(@PathVariable Long id) {
+    public void deleteTag(
+            @Parameter(description = "ID de la etiqueta", required = true)
+            @PathVariable Long id) {
         tagService.deleteById(id);
     }
     /** LIstar categorias */

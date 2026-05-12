@@ -7,12 +7,14 @@ import com.openwebinars.todo.users.NewUserResponse;
 import com.openwebinars.todo.users.User;
 import com.openwebinars.todo.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,20 +27,18 @@ import java.util.List;
 @PreAuthorize("hasRole('ADMIN')")
 @SecurityRequirement(name="basicAuth")
 @Tag(name = "Admin", description = "Endpoints de administración")
+@AllArgsConstructor
 public class AdminController {
     private final UserService userService;
 
     private final CategoryService categoryService;
 
-    public AdminController(UserService userService, CategoryService categoryService) {
-        this.userService = userService;
-        this.categoryService = categoryService;
-    }
-
     /* Cambiar Usuario - Gestor */
     @Operation(summary = "Promocionar usuario a gestor", description = "Cambia el rol de un usuario a GESTOR")
     @PutMapping("/user/{id}/promote")
-    public ResponseEntity<NewUserResponse> promoteToGestor(@PathVariable Long id) {
+    public ResponseEntity<NewUserResponse> promoteToGestor(
+            @Parameter(description = "ID del usuario a promocionar", required = true)
+            @PathVariable Long id) {
         User user = userService.changeRole(id, User.RoleType.GESTOR);
         return ResponseEntity.ok(NewUserResponse.of(user));
     }
@@ -46,7 +46,9 @@ public class AdminController {
     @Operation(summary = "Degradar usuario gestor a usuario", description = "Cambia el rol de un usuario a USUARIO")
     @PutMapping("/user/{id}/degradate")
     @RequestBody(description = "Datos del usuario")
-    public ResponseEntity<NewUserResponse> degradateToUser(@PathVariable Long id) {
+    public ResponseEntity<NewUserResponse> degradateToUser(
+            @Parameter(description = "ID del usuario a degradar", required = true)
+            @PathVariable Long id) {
         User user = userService.changeRole(id, User.RoleType.USUARIO);
         return ResponseEntity.ok(NewUserResponse.of(user));       }
     /****  CRUD USUARIO ****/
@@ -62,13 +64,17 @@ public class AdminController {
     /* Obtener usuario */
     @Operation(summary = "Obtener usuario por ID", description = "Buscar usuario por su identificador")
     @GetMapping("/user/{id}")
-    public NewUserResponse getUser(@PathVariable Long id) {
+    public NewUserResponse getUser(
+            @Parameter(description = "ID del usuario", required = true)
+            @PathVariable Long id) {
         return NewUserResponse.of(userService.getUser(id));
     }
 
     @Operation(summary = "Obtener usuario por Email", description = "Buscar usuario por su correo electrónico")
     @GetMapping("/user/{email}")
-    public NewUserResponse getUser(@PathVariable String email) {
+    public NewUserResponse getUser(
+            @Parameter(description = "Email del usuario", required = true)
+            @PathVariable String email) {
         return NewUserResponse.of(userService.getUser(email));
     }
 
@@ -98,7 +104,9 @@ public class AdminController {
     @Operation(summary = "Actualizar usuario", description = "Actualizar datos del usuario")
     @PutMapping("/user/{id}")
     public ResponseEntity<NewUserResponse> editUser(
+            @Parameter(description = "ID del usuario", required = true)
             @PathVariable Long id,
+            @Parameter(description = "Datos actualizados del usuario", required = true)
             @RequestBody NewUserCommand cmd) {
 
         User user = userService.updateUser(id, cmd);
@@ -108,7 +116,9 @@ public class AdminController {
     /* Eliminar usuario */
     @Operation(summary = "Eliminar usuario", description = "Eliminar información de un usuario")
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(
+            @Parameter(description = "IS del usuario a eliminar", required = true)
+            @PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
@@ -125,27 +135,46 @@ public class AdminController {
     /* Obtener categoria */
     @Operation(summary = "Obtener categoria", description = "Obtener información de una categoría")
     @GetMapping("/category/{id}")
-    public Category getCategory(@PathVariable Long id) {
+    public Category getCategory(
+            @Parameter(description = "ID de la categoria", required = true)
+            @PathVariable Long id) {
         return categoryService.findByID(id);
     }
 
     /* Crear categoría */
     @Operation(summary = "Crear categoria", description = "OCrear una nueva categoría")
     @PostMapping("/category")
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+    public ResponseEntity<Category> createCategory(
+            @Parameter(description = "Datos de la categoría", required = true)
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Datos de la nueva categoría",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{ \"title\": \"Nueva Categoría\" }"
+                            )
+                    )
+            ) @org.springframework.web.bind.annotation.RequestBody Category category) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(category));
     }
 
     /* Editar categoria */
-    @Operation(summary = "Crear categoria", description = "Editar una categoría existente")
+    @Operation(summary = "Editar categoria", description = "Editar una categoría existente")
     @PutMapping("/category/{id}")
-    public ResponseEntity<Category> editCategory(@PathVariable Long id, @RequestBody Category  category) {
+    public ResponseEntity<Category> editCategory(
+            @Parameter(description = "ID de la categoría a editar", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Datos modificados de la categoria", required = true)
+            @RequestBody Category  category) {
         return ResponseEntity.ok(categoryService.edit(id, category));
     }
     /* Borrar categoria */
     @Operation(summary = "Eliminar categoria", description = "Borrar una categoría por su ID")
     @DeleteMapping("/category/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<?> deleteCategory(
+            @Parameter(description = "ID de la categoría a eliminar", required = true)
+            @PathVariable Long id) {
         categoryService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
