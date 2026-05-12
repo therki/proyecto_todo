@@ -27,11 +27,18 @@ public class TagService {
     }
     /* Crear tag */
     public  Tag save (Tag tag){
+        if(tagRepository.findByName(tag.getName()).isPresent()){
+            throw new RuntimeException("La etiqueta '" + tag.getName() + "' ya existe");
+        }
+        tag.setId(null);
         return tagRepository.save(tag);
     }
 
     /* Editar etiqueta */
     public Tag edit(Long id, Tag tag){
+        if(tagRepository.findByName(tag.getName()).isPresent()){
+            throw new RuntimeException("La etiqueta '" + tag.getName() + "' ya existe");
+        }
         return tagRepository.findById(id)
             .map(t -> {
                 t.setName(tag.getName());

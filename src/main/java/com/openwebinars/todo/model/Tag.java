@@ -1,6 +1,7 @@
 package com.openwebinars.todo.model;
 
 import com.openwebinars.todo.model.Category;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,6 +20,7 @@ import java.util.Objects;
 public class Tag {
     @Id
     @GeneratedValue
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     private String name;
