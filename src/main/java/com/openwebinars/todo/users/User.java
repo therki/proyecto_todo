@@ -1,5 +1,6 @@
 package com.openwebinars.todo.users;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,15 +21,16 @@ import java.util.List;
 @Table(name = "user_entity")// USER es palabra reservada en H2 y otros SGBD
 public class User implements UserDetails {
     // Tipos de role para el usuario
-    public enum RoleType { ADMIN, GESTOR, USER }
+    public enum RoleType { ADMIN, GESTOR, USUARIO }
 
     @Id
     @GeneratedValue
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @Column(unique = true)
     private String username;
-
+    private String fullname;
     private String email;
     private String password;
 

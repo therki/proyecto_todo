@@ -18,8 +18,9 @@ public class UserService {
         User user = User.builder()
                 .username(cmd.username())
                 .email(cmd.email())
+                .fullname(cmd.fullname())
                 .password(passwordEncoder.encode(cmd.password()))
-                .role(cmd.role() != null ? cmd.role() : User.RoleType.USER)
+                .role(cmd.role() != null ? cmd.role() : User.RoleType.USUARIO)
                 .build();
         return userRepository.save(user);
     }

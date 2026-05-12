@@ -38,34 +38,38 @@ public class AdminController {
     /* Cambiar Usuario - Gestor */
     @Operation(summary = "Promocionar usuario a gestor", description = "Cambia el rol de un usuario a GESTOR")
     @PutMapping("/user/{id}/promote")
-    public ResponseEntity<User> promoteToGestor(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.changeRole(id, User.RoleType.valueOf("GESTOR")));
+    public ResponseEntity<NewUserResponse> promoteToGestor(@PathVariable Long id) {
+        User user = userService.changeRole(id, User.RoleType.GESTOR);
+        return ResponseEntity.ok(NewUserResponse.of(user));
     }
     /* Cambiar Gestor - Usuario */
     @Operation(summary = "Degradar usuario gestor a usuario", description = "Cambia el rol de un usuario a USUARIO")
     @PutMapping("/user/{id}/degradate")
     @RequestBody(description = "Datos del usuario")
-    public ResponseEntity<User> degradateToUser(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.changeRole(id, User.RoleType.valueOf("USER")));
-    }
+    public ResponseEntity<NewUserResponse> degradateToUser(@PathVariable Long id) {
+        User user = userService.changeRole(id, User.RoleType.USUARIO);
+        return ResponseEntity.ok(NewUserResponse.of(user));       }
     /****  CRUD USUARIO ****/
     /* Listar usuarios */
     @Operation(summary = "Listar usuarios", description = "Listar todos los usuarios de la aplicación")
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.listUsers();
+    public List<NewUserResponse> getAllUsers() {
+        return userService.listUsers()
+                .stream()
+                .map(NewUserResponse::of) // Convertimos cada User en NewUserResponse
+                .toList();
     }
     /* Obtener usuario */
     @Operation(summary = "Obtener usuario por ID", description = "Buscar usuario por su identificador")
     @GetMapping("/user/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+    public NewUserResponse getUser(@PathVariable Long id) {
+        return NewUserResponse.of(userService.getUser(id));
     }
 
     @Operation(summary = "Obtener usuario por Email", description = "Buscar usuario por su correo electrónico")
     @GetMapping("/user/{email}")
-    public User getUser(@PathVariable String email) {
-        return userService.getUser(email);
+    public NewUserResponse getUser(@PathVariable String email) {
+        return NewUserResponse.of(userService.getUser(email));
     }
 
     /* Crear usuario */
@@ -121,7 +125,7 @@ public class AdminController {
     /* Obtener categoria */
     @Operation(summary = "Obtener categoria", description = "Obtener información de una categoría")
     @GetMapping("/category/{id}")
-    public Category getCategory(Long id) {
+    public Category getCategory(@PathVariable Long id) {
         return categoryService.findByID(id);
     }
 
