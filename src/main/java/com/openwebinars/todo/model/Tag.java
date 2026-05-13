@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
+import com.openwebinars.todo.users.User;
 
 @Getter
 @Setter
@@ -23,6 +24,10 @@ public class Tag {
     private Long id;
 
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_tag_user"))
+    private User user;
 
     @Override
     public final boolean equals(Object o) {
