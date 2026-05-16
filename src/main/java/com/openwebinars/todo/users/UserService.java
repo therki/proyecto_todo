@@ -56,6 +56,21 @@ public class UserService {
                 .orElseThrow(()-> new RuntimeException("Usuario no encontrado con ID: " + userId));
     }
 
+    /* Editar usuario - desde usuario (solo unos campos) */
+    public User updatePartialUser(Long userId, EditUserCommand user){
+
+        return userRepository.findById(userId)
+                .map(u->{
+                    u.setEmail(user.email());
+                    u.setUsername(user.username());
+                    if (user.password() != null && !user.password().isBlank()) {
+                        u.setPassword(passwordEncoder.encode(user.password()));
+                    }
+                    return  userRepository.save(u);
+                })
+                .orElseThrow(()-> new RuntimeException("Usuario no encontrado con ID: " + userId));
+    }
+
     /* Listar todos los usuarios */
     public List<User> listUsers(){
         return userRepository.findAll();
