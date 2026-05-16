@@ -68,7 +68,7 @@ public class TaskService {
                 Task.builder()
                         .title(cmd.title())
                         .description(cmd.description())
-                        .deadline(LocalDate.from(cmd.deadline()))
+                        .deadline(cmd.deadline() != null ? LocalDate.from(cmd.deadline()) : null)
                         .priority(cmd.priority())
                         .completed(false)
                         .author(autor)
@@ -159,6 +159,21 @@ public class TaskService {
             tasks.forEach(task -> task.setCategory(defaultCategory));
             taskRepository.saveAll(tasks);
         }
+    }
+    /* Obtener tarea de un usuario por nombre de etiqueta*/
+    public List<Task> searchByTag(String tagName, User user){
+        List<Task> tasks = taskRepository.findByTagNameAndAuthor(tagName, user);
+        if(tasks.isEmpty()){
+            throw new TaskNotFoundException("No hay tareas con la etiqueta: " + tagName);
+        }
+        return tasks;
+    }
+    public List<Task> searchByTagList(List<String> tagNames, User user){
+        List<Task> tasks = taskRepository.findByTagNamesAndAuthor(tagNames, user);
+        if(tasks.isEmpty()){
+            throw new TaskNotFoundException("No hay tareas con las etiquetas: " + tagNames);
+        }
+        return tasks;
     }
 
 }

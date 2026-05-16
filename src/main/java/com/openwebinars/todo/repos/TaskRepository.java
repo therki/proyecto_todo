@@ -6,11 +6,13 @@ import com.openwebinars.todo.users.User;
 import jakarta.persistence.EnumType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -42,4 +44,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     /* Buscar por prioridad */
     List<Task> findByPriorityAndAuthor(Task.Priority priority, User author);
+
+    /* Buscar tarea por nombre de etiqueta */
+    @Query("SELECT DISTINCT t FROM Task t JOIN t.tags tag WHERE tag.name = :tagName AND t.author = :author")
+    List<Task> findByTagNameAndAuthor(@Param("tagName") String tagName, @Param("author") User author);
+
+    @Query("SELECT DISTINCT t FROM Task t JOIN t.tags tag WHERE tag.name IN :tagNames AND t.author = :author")
+    List<Task> findByTagNamesAndAuthor(@Param("tagNames") List<String> tagName, @Param("author") User author);
+
+
 }
