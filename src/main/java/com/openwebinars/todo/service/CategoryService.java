@@ -1,5 +1,6 @@
 package com.openwebinars.todo.service;
 
+import com.openwebinars.todo.dto.EditCategoryCommand;
 import com.openwebinars.todo.model.Category;
 import com.openwebinars.todo.repos.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +30,17 @@ public class CategoryService {
     }
 
 /* EDITAR CATEGORIA */
-    public Category edit(Long id, Category category) {
-    return categoryRepository.findById(id)
-            .map(cat -> {
-                cat.setTitle(category.getTitle());
-                return categoryRepository.save(cat);
-            })
-            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
-}
+    public Category edit(Long id, EditCategoryCommand category) {
+
+        return categoryRepository.findById(id)
+                .map(cat -> {
+                    if (category.title() != null && !category.title().isBlank()) {
+                        cat.setTitle(category.title());
+                    }
+                    return categoryRepository.save(cat);
+                })
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+    }
 /* ELIMINAR CATEGORIA */
     public void deleteById(Long id) {
         // No borrar categoria por defecto

@@ -1,5 +1,8 @@
 package com.openwebinars.todo.service;
 
+import com.openwebinars.todo.dto.EditTagDto;
+import com.openwebinars.todo.dto.EditTaskDto;
+import com.openwebinars.todo.dto.GetTagDto;
 import com.openwebinars.todo.model.Tag;
 import com.openwebinars.todo.repos.TagRepository;
 import com.openwebinars.todo.users.User;
@@ -14,13 +17,20 @@ public class TagService {
     private final TagRepository tagRepository;
 
     /* Listar todas  etiquetas */
-    public List<Tag> findAll(){
-        return tagRepository.findAll();
+    public List<GetTagDto> findAll(){
+        return tagRepository.findAll()
+                .stream()
+                .map(GetTagDto::of)
+                .toList();
     }
     /* Listar tags de usuario */
-    public List<Tag> findAllByUser(User user){
-        return tagRepository.findByUser(user);
+    public List<GetTagDto> findAllByUser(User user){
+        return tagRepository.findByUser(user)
+                .stream()
+                .map(GetTagDto::of)
+                .toList();
     }
+
     /* Obtener etiqueta por id */
     public Tag findById(Long id){
         return tagRepository.findById(id)
@@ -37,26 +47,28 @@ public class TagService {
                 .orElseThrow(() -> new RuntimeException("Etiqueta no encontrada con nombre: " + name));
     }
     /* Crear tag */
-    public  Tag save (Tag tag, User user){
-        if (tagRepository.findByNameAndUser(tag.getName(), user).isPresent()) {
-            throw new RuntimeException("La etiqueta '" + tag.getName() + "' ya existe");
+    public  Tag save (EditTagDto tag, User user){
+        if (tagRepository.findByNameAndUser(tag.name(), user).isPresent()) {
+            throw new RuntimeException("La etiqueta '" + tag.name() + "' ya existe");
         }
-        tag.setId(null);
-        tag.setUser(user);
-        return tagRepository.save(tag);
+        Tag tagRes = Tag.builder()
+                .name(tag.name())
+                .user(user)
+                .build();
+        return tagRepository.save(tagRes);
     }
 
     /* Editar etiqueta */
-    public Tag edit(Long id, Tag tag, User user){
-        if(tagRepository.findByNameAndUser(tag.getName(),user).isPresent()){
-            throw new RuntimeException("La etiqueta '" + tag.getName() + "' ya existe");
+    public Tag edit(Long id, EditTagDto tag, User user){
+        if(tagRepository.findByNameAndUser(tag.name(), user).isPresent()){
+            throw new RuntimeException("La etiqueta '" + tag.name() + "' ya existe");
         }
         return tagRepository.findById(id)
-            .map(t -> {
-                t.setName(tag.getName());
-                return tagRepository.save(t);
-            })
-            .orElseThrow(() -> new RuntimeException("Etiqueta no encontrada"));
+                .map(t -> {
+                    t.setName(tag.name());
+                    return tagRepository.save(t);
+                })
+                .orElseThrow(() -> new RuntimeException("Etiqueta no encontrada"));
     }
 
     /* Eliminar etiqueta */

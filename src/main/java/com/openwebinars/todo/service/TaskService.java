@@ -85,8 +85,7 @@ public class TaskService {
                     t.setTitle(cmd.title());
                     t.setDescription(cmd.description());
                     t.setCompleted(cmd.completed());
-                    t.setDeadline(LocalDate.from(cmd.deadline()));
-                    t.setPriority(cmd.priority());
+                    t.setDeadline(cmd.deadline() != null ? LocalDate.from(cmd.deadline()) : null);                    t.setPriority(cmd.priority());
                     return  taskRepository.save(t);
                 }
         ).orElseThrow(()->new TaskNotFoundException(id));
@@ -101,53 +100,65 @@ public class TaskService {
     }
 
     /* Obtener tareas por descripcion */
-    public List<Task> searchByDescription(String description, User autor){
+    public List<GetTaskDto> searchByDescription(String description, User autor){
         List<Task> result = taskRepository.findByDescriptionContainingIgnoreCaseAndAuthor(description, autor);
         if(result.isEmpty()){
             throw new TaskNotFoundException();
         }
-        return  result;
+        return result.stream()
+                .map(GetTaskDto::of)
+                .toList();
     }
 
     /* Obtener tareas por fecha de creacion */
-    public List<Task> searchByCreatedAt(LocalDate fecha, User autor){
+    public List<GetTaskDto> searchByCreatedAt(LocalDate fecha, User autor){
         List<Task> result = taskRepository.findByCreatedAtAndAuthor(fecha, autor);
         if(result.isEmpty()){
             throw new TaskNotFoundException();
         }
-        return  result;
+        return result.stream()
+                .map(GetTaskDto::of)
+                .toList();
     }
     /* Obtener tareas por fecha límite */
-    public List<Task> searchByDeadline(LocalDate fecha, User autor){
+    public List<GetTaskDto> searchByDeadline(LocalDate fecha, User autor){
         List<Task> result = taskRepository.findByDeadlineLessThanEqualAndAuthor(fecha, autor);
         if(result.isEmpty()){
             throw new TaskNotFoundException();
         }
-        return  result;
+        return result.stream()
+                .map(GetTaskDto::of)
+                .toList();
     }
     /* Obtener tareas completadas */
-    public List<Task> searchByCompleted(Boolean completed, User autor){
+    public List<GetTaskDto> searchByCompleted(Boolean completed, User autor){
         List<Task> result = taskRepository.findByCompletedAndAuthor(completed, autor);
         if(result.isEmpty()){
             throw new TaskNotFoundException();
         }
-        return  result;
+        return result.stream()
+                .map(GetTaskDto::of)
+                .toList();
     }
     /* Obtener tareas por fecha límite */
-    public List<Task> searchByPriority(Task.Priority priority, User autor){
+    public List<GetTaskDto> searchByPriority(Task.Priority priority, User autor){
         List<Task> result = taskRepository.findByPriorityAndAuthor(priority, autor);
         if(result.isEmpty()){
             throw new TaskNotFoundException();
         }
-        return  result;
+        return result.stream()
+                .map(GetTaskDto::of)
+                .toList();
     }
     /* Obtener tareas por título */
-    public List<Task> searchByTitle(String title, User autor){
+    public List<GetTaskDto> searchByTitle(String title, User autor){
         List<Task> result = taskRepository.findByTitleContainingIgnoreCaseAndAuthor(title, autor);
         if(result.isEmpty()){
             throw new TaskNotFoundException();
         }
-        return  result;
+        return result.stream()
+                .map(GetTaskDto::of)
+                .toList();
     }
 
     public void updateCategoryBeforeDelete(Long oldCategoryId, Long newCategoryId) {
@@ -161,19 +172,58 @@ public class TaskService {
         }
     }
     /* Obtener tarea de un usuario por nombre de etiqueta*/
-    public List<Task> searchByTag(String tagName, User user){
+    public List<GetTaskDto> searchByTag(String tagName, User user){
         List<Task> tasks = taskRepository.findByTagNameAndAuthor(tagName, user);
         if(tasks.isEmpty()){
             throw new TaskNotFoundException("No hay tareas con la etiqueta: " + tagName);
         }
-        return tasks;
+        return tasks.stream()
+                .map(GetTaskDto::of)
+                .toList();
     }
-    public List<Task> searchByTagList(List<String> tagNames, User user){
+    public List<GetTaskDto> searchByTagList(List<String> tagNames, User user){
         List<Task> tasks = taskRepository.findByTagNamesAndAuthor(tagNames, user);
         if(tasks.isEmpty()){
             throw new TaskNotFoundException("No hay tareas con las etiquetas: " + tagNames);
         }
-        return tasks;
+        return tasks.stream()
+                .map(GetTaskDto::of)
+                .toList();
+    }
+    /* Listar tareas filtradas por parametros */
+    public List<GetTaskDto> searchTasks(String title,String description,Task.Priority priority,
+            Boolean completed,LocalDate deadline,User autor, String category) {
+        List<Task> tasks;
+
+        if (title != null && !title.isBlank()) {
+            tasks = taskRepository.findByTitleContainingIgnoreCaseAndAuthor(title, autor);
+        } else if (description != null && !description.isBlank()) {
+            tasks = taskRepository.findByDescriptionContainingIgnoreCaseAndAuthor(description, autor);
+        } else if (priority != null) {
+            tasks = taskRepository.findByPriorityAndAuthor(priority, autor);
+        } else if (completed != null) {
+            tasks = taskRepository.findByCompletedAndAuthor(completed, autor);
+        } else if (deadline != null) {
+            tasks = taskRepository.findByDeadlineLessThanEqualAndAuthor(deadline, autor);
+        } else if (category != null) {
+        Category cat = categoryRepository.findByTitle(category);
+        tasks = taskRepository.findByCategoryAndAuthor(cat, autor);
+    }  else {
+            // Si no se pasa ningún filtro, devolvemos todas las tareas del autor
+            tasks = taskRepository.findByAuthor(autor);
+        }
+
+        if (tasks.isEmpty()) {
+            throw new TaskNotFoundException("No se encontraron tareas con los filtros aplicados.");
+        }
+
+        return tasks.stream()
+                .map(GetTaskDto::of)
+                .toList();
     }
 
+
+    public Task saveTask(Task task) {
+        return taskRepository.save(task);
+    }
 }

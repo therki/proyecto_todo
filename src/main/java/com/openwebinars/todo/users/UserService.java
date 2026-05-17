@@ -20,7 +20,7 @@ public class UserService {
                 .email(cmd.email())
                 .fullname(cmd.fullname())
                 .password(passwordEncoder.encode(cmd.password()))
-                .role(cmd.role() != null ? cmd.role() : User.RoleType.USUARIO)
+                .role(cmd.role() != null ? cmd.role() : null)
                 .build();
         return userRepository.save(user);
     }
