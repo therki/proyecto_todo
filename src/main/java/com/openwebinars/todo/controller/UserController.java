@@ -234,7 +234,7 @@ public class UserController {
     /* Editar datos propios del usuario */
     @Operation(summary = "Editar información de usuario", description = "Actualizar información propia del usuario")
     @PutMapping("/edit-profile")
-    public NewUserResponse editSelf(
+    public User editSelf(
             @Parameter(hidden = true)
             @AuthenticationPrincipal User user,
             @Parameter(description = "Datos actualizados del usuario", required = true)
