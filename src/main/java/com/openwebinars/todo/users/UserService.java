@@ -61,8 +61,12 @@ public class UserService {
 
         return userRepository.findById(userId)
                 .map(u->{
-                    u.setEmail(user.email());
-                    u.setUsername(user.username());
+                    if (user.username() != null && !user.username().isBlank()) {
+                        u.setUsername(user.username());
+                    }
+                    if (user.email() != null && !user.email().isBlank()) {
+                        u.setEmail(user.email());
+                    }
                     if (user.password() != null && !user.password().isBlank()) {
                         u.setPassword(passwordEncoder.encode(user.password()));
                     }
