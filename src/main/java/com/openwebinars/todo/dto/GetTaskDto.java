@@ -4,6 +4,7 @@ import com.openwebinars.todo.model.Task;
 import com.openwebinars.todo.model.Task.Priority;
 import com.openwebinars.todo.users.NewUserResponse;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,7 +15,7 @@ public record GetTaskDto(
         String description,
         boolean completed,
         LocalDateTime createdAt,
-        LocalDateTime deadline,
+        LocalDate deadline,
         Priority priority,
         String categoryName,
         Set<String> tags,
@@ -28,7 +29,7 @@ public record GetTaskDto(
                 t.getDescription(),
                 t.isCompleted(),
                 t.getCreatedAt(),
-                (t.getDeadline() != null) ? t.getDeadline().atStartOfDay() :null,
+                (t.getDeadline() != null) ? t.getDeadline() :null,
                 t.getPriority(),
                 (t.getCategory() != null) ? t.getCategory().getTitle() : "Sin categoría",
                 t.getTags().stream()
