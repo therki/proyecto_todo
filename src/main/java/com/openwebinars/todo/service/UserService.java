@@ -1,6 +1,9 @@
-package com.openwebinars.todo.users;
+package com.openwebinars.todo.service;
 
-import lombok.AllArgsConstructor;
+import com.openwebinars.todo.dto.EditUserCommand;
+import com.openwebinars.todo.dto.NewUserCommand;
+import com.openwebinars.todo.model.User;
+import com.openwebinars.todo.repos.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

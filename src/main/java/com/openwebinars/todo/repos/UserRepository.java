@@ -1,5 +1,6 @@
-package com.openwebinars.todo.users;
+package com.openwebinars.todo.repos;
 
+import com.openwebinars.todo.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

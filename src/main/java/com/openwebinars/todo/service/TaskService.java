@@ -9,21 +9,13 @@ import com.openwebinars.todo.model.Task;
 import com.openwebinars.todo.repos.CategoryRepository;
 import com.openwebinars.todo.repos.TagRepository;
 import com.openwebinars.todo.repos.TaskRepository;
-import com.openwebinars.todo.users.User;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import com.openwebinars.todo.model.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

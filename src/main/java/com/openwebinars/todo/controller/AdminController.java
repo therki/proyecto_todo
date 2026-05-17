@@ -1,9 +1,13 @@
 package com.openwebinars.todo.controller;
 
 import com.openwebinars.todo.dto.EditCategoryCommand;
+import com.openwebinars.todo.dto.EditUserCommand;
+import com.openwebinars.todo.dto.NewUserCommand;
+import com.openwebinars.todo.dto.NewUserResponse;
 import com.openwebinars.todo.model.Category;
+import com.openwebinars.todo.model.User;
 import com.openwebinars.todo.service.CategoryService;
-import com.openwebinars.todo.users.*;
+import com.openwebinars.todo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -1,10 +1,6 @@
 package com.openwebinars.todo.dto;
 
 import com.openwebinars.todo.model.Tag;
-import com.openwebinars.todo.model.Task;
-import com.openwebinars.todo.users.NewUserResponse;
-
-import java.util.stream.Collectors;
 
 public record GetTagDto(
         Long id, String name, NewUserResponse user

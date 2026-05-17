@@ -1,7 +1,7 @@
 package com.openwebinars.todo.repos;
 
 import com.openwebinars.todo.model.Tag;
-import com.openwebinars.todo.users.User;
+import com.openwebinars.todo.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

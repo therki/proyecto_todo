@@ -1,11 +1,10 @@
 package com.openwebinars.todo.service;
 
 import com.openwebinars.todo.dto.EditTagDto;
-import com.openwebinars.todo.dto.EditTaskDto;
 import com.openwebinars.todo.dto.GetTagDto;
 import com.openwebinars.todo.model.Tag;
 import com.openwebinars.todo.repos.TagRepository;
-import com.openwebinars.todo.users.User;
+import com.openwebinars.todo.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package com.openwebinars.todo.security;
 
-import com.openwebinars.todo.users.UserRepository;
+import com.openwebinars.todo.repos.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

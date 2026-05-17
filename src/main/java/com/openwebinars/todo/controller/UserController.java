@@ -1,15 +1,13 @@
 package com.openwebinars.todo.controller;
 
-import com.openwebinars.todo.dto.EditTagDto;
-import com.openwebinars.todo.dto.EditTaskDto;
-import com.openwebinars.todo.dto.GetTagDto;
-import com.openwebinars.todo.dto.GetTaskDto;
+import com.openwebinars.todo.dto.*;
 import com.openwebinars.todo.model.Category;
 import com.openwebinars.todo.model.Task;
+import com.openwebinars.todo.model.User;
 import com.openwebinars.todo.service.CategoryService;
 import com.openwebinars.todo.service.TagService;
 import com.openwebinars.todo.service.TaskService;
-import com.openwebinars.todo.users.*;
+import com.openwebinars.todo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

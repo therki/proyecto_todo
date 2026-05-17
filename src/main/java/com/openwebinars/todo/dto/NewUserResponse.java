@@ -1,6 +1,8 @@
-package com.openwebinars.todo.users;
+package com.openwebinars.todo.dto;
 
-public record NewUserResponse(Long id,String fullname,  String username, String email, User.RoleType role) {
+import com.openwebinars.todo.model.User;
+
+public record NewUserResponse(Long id, String fullname, String username, String email, User.RoleType role) {
 
     public static NewUserResponse of(User user) {
         return new NewUserResponse(

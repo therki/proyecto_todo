@@ -1,13 +1,11 @@
 package com.openwebinars.todo.model;
 
-import com.openwebinars.todo.model.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
-import com.openwebinars.todo.users.User;
 
 @Getter
 @Setter

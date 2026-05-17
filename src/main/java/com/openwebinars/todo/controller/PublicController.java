@@ -1,9 +1,8 @@
 package com.openwebinars.todo.controller;
 
-import com.openwebinars.todo.users.NewUserCommand;
-import com.openwebinars.todo.users.NewUserResponse;
-import com.openwebinars.todo.users.User;
-import com.openwebinars.todo.users.UserService;
+import com.openwebinars.todo.dto.NewUserCommand;
+import com.openwebinars.todo.dto.NewUserResponse;
+import com.openwebinars.todo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
