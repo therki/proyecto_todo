@@ -1,5 +1,6 @@
 package com.openwebinars.todo.controller;
 
+import com.openwebinars.todo.dto.EditCategoryCommand;
 import com.openwebinars.todo.model.Category;
 import com.openwebinars.todo.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,13 +67,13 @@ public class GestorController {
     }
 
     /* Editar categoria */
-    @Operation(summary = "Crear categoria", description = "Editar una categoría existente")
+    @Operation(summary = "Editar categoria", description = "Editar una categoría existente")
     @PutMapping("/category/{id}")
     public ResponseEntity<Category> editCategory(
             @Parameter(description = "ID categoría a editar", required = true)
             @PathVariable Long id,
             @Parameter(description = "Datos de la categoría a editar", required = true)
-            @org.springframework.web.bind.annotation.RequestBody Category  category) {
+            @org.springframework.web.bind.annotation.RequestBody EditCategoryCommand category) {
         return ResponseEntity.ok(categoryService.edit(id, category));
     }
     /* Borrar categoria */

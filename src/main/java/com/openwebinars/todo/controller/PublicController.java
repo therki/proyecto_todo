@@ -41,7 +41,7 @@ public class PublicController {
                             schema = @Schema(implementation = NewUserCommand.class),
                             examples = @ExampleObject(
                                     name = "Ejemplo de registro",
-                                    value = "{ \"username\": \"nuevoUsuario\", \"fullname\": \"Nombre Completo\", \"email\": \"usuario@example.com\", \"password\": \"12345\", \"role\": \"USUARIO\" }"
+                                    value = "{ \"username\": \"nuevoUsuario\", \"fullname\": \"Nombre Completo\", \"email\": \"usuario@example.com\", \"password\": \"12345\" }"
                             )
                     )
             )

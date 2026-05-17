@@ -1,17 +1,14 @@
 package com.openwebinars.todo.controller;
 
+import com.openwebinars.todo.dto.EditCategoryCommand;
 import com.openwebinars.todo.model.Category;
 import com.openwebinars.todo.service.CategoryService;
-import com.openwebinars.todo.users.NewUserCommand;
-import com.openwebinars.todo.users.NewUserResponse;
-import com.openwebinars.todo.users.User;
-import com.openwebinars.todo.users.UserService;
+import com.openwebinars.todo.users.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -44,9 +41,8 @@ public class AdminController {
     }
     /* Cambiar Gestor - Usuario */
     @Operation(summary = "Degradar usuario gestor a usuario", description = "Cambia el rol de un usuario a USUARIO")
-    @PutMapping("/user/{id}/degradate")
-    @RequestBody(description = "Datos del usuario")
-    public ResponseEntity<NewUserResponse> degradateToUser(
+    @PutMapping("/user/{id}/demote")
+    public ResponseEntity<NewUserResponse> demoteToUser(
             @Parameter(description = "ID del usuario a degradar", required = true)
             @PathVariable Long id) {
         User user = userService.changeRole(id, User.RoleType.USUARIO);
@@ -64,15 +60,15 @@ public class AdminController {
     /* Obtener usuario */
     @Operation(summary = "Obtener usuario por ID", description = "Buscar usuario por su identificador")
     @GetMapping("/user/{id}")
-    public NewUserResponse getUser(
+    public NewUserResponse getUserById(
             @Parameter(description = "ID del usuario", required = true)
             @PathVariable Long id) {
         return NewUserResponse.of(userService.getUser(id));
     }
 
     @Operation(summary = "Obtener usuario por Email", description = "Buscar usuario por su correo electrónico")
-    @GetMapping("/user/{email}")
-    public NewUserResponse getUser(
+    @GetMapping("/user/by-email/{email}")
+    public NewUserResponse getUserByEmail(
             @Parameter(description = "Email del usuario", required = true)
             @PathVariable String email) {
         return NewUserResponse.of(userService.getUser(email));
@@ -107,9 +103,9 @@ public class AdminController {
             @Parameter(description = "ID del usuario", required = true)
             @PathVariable Long id,
             @Parameter(description = "Datos actualizados del usuario", required = true)
-            @RequestBody NewUserCommand cmd) {
+            @RequestBody EditUserCommand cmd) {
 
-        User user = userService.updateUser(id, cmd);
+        User user = userService.updatePartialUser(id, cmd);
         return ResponseEntity.ok(NewUserResponse.of(user));
     }
 
@@ -166,7 +162,7 @@ public class AdminController {
             @Parameter(description = "ID de la categoría a editar", required = true)
             @PathVariable Long id,
             @Parameter(description = "Datos modificados de la categoria", required = true)
-            @RequestBody Category  category) {
+            @org.springframework.web.bind.annotation.RequestBody EditCategoryCommand category) {
         return ResponseEntity.ok(categoryService.edit(id, category));
     }
     /* Borrar categoria */
