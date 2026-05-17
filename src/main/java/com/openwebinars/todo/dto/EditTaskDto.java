@@ -5,7 +5,10 @@ import com.openwebinars.todo.model.Task;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+/* DTO para edición de una tarea
+ Solo solicita los campos modificables
+ - Formatea la fecha límite de la tarea
+*/
 public record EditTaskDto(
         String title,
         String description,

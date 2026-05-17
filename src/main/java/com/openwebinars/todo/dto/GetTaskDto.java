@@ -7,7 +7,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
+/* DTO de salida - información de una tarea
 
+Se necesita ya que al obtener la tarea, no se quiere mostrar el usuario
+que la creo
+
+*/
 public record GetTaskDto(
         Long id,
         String title,
